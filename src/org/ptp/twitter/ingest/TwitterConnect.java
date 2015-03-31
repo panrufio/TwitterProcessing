@@ -48,7 +48,7 @@ public class TwitterConnect {
 		//String twitterURL = "https://stream.twitter.com/1/statuses/sample.json?delimited=length";
 		String twitterURL = "https://stream.twitter.com/1.1/statuses/sample.json";
 		
-		String outDirStr = "/Users/andrew/devel/data/twitter/";
+		String outDirStr = null;
 		String fileNamePrefix = "twitter-";
 		String config = null;
 		String twitterKey = null;
