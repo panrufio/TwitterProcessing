@@ -130,7 +130,7 @@ public class TwitterConnect {
 		String str;
 		while((str = reader.readLine()) != null){
 			str = str.trim();
-			if(cnt >= 50001){
+			if(cnt >= 200001){
 				System.out.println();
 				bw.close();
 				fw.close();

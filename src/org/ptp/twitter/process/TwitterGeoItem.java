@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Properties;
 
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.JTSFactoryFinder;
@@ -32,6 +33,10 @@ public class TwitterGeoItem {
 	private String md5;
 	private JSONObject jels;
 	private JSONObject joGeo;
+	
+	private Properties props;
+	private Properties userProps;
+	
 	public TwitterGeoItem(){
 		twitterSchema = new TwitterSchema();
 	} // end constructor
@@ -45,7 +50,9 @@ public class TwitterGeoItem {
 	
 	public void parseItem(String line){
 		// calculate the md5 of the line
-		
+		props = new Properties();
+		userProps = new Properties();
+
 		JSONParser parser = null; //= new JSONParser();
 		//JSONObject jels = null;
 		try{
@@ -59,6 +66,26 @@ public class TwitterGeoItem {
 			}
 			parseGeo(geoObj.toJSONString());
 			//parseAllItems(jels);
+
+			JSONObject userJSON = (JSONObject)(jels.get(twitterSchema.TWITTER_USER_KEY));
+			parseUser(userJSON);
+			
+			
+			
+			ArrayList<String> allKeys = twitterSchema.getTwitterKeys();			
+			for(String ak : allKeys){
+				
+				String v = "";
+				Object o = jels.get(ak);
+				if(o == null){
+					continue;
+				} else {
+					v = o.toString();
+					props.put(ak, v);
+				}
+				
+			}
+			
 			
 		} catch(ParseException pe){
 			pe.printStackTrace();
@@ -86,12 +113,6 @@ public class TwitterGeoItem {
 		
 	} // end parseItem
 
-//	private void parseAllItems(JSONObject jo){
-//		
-//		
-//		
-//		
-//	} // end parseAllItems
 	
 	
 	
@@ -120,9 +141,11 @@ public class TwitterGeoItem {
 		double lat = Double.MIN_VALUE;
 		double lon = Double.MIN_VALUE;
 		if(it.hasNext()){
+			// longitude is first
 			lon = Double.parseDouble((it.next()).toString());
 		}
 		if(it.hasNext()){
+			// latitude is second
 			lat = Double.parseDouble((it.next()).toString()) ;
 		}
 		if(lat == Double.MIN_VALUE ||
@@ -145,6 +168,53 @@ public class TwitterGeoItem {
 		
 	} // end parseGeo
 
+	private void parseUser(JSONObject userJSON){
+		ArrayList<String> userKeys = twitterSchema.getTwitterUserKeys();
+		for(String uk : userKeys){
+			
+			String v = "";
+			Object o = userJSON.get(uk);
+			if(o == null){
+				continue;
+			} else {
+				v = o.toString();
+				userProps.put(uk, v);
+			}
+		}
+		
+	} // end parseUser
+	
+	
+	
+	public String getID(){
+		return props.getProperty(twitterSchema.TWITTER_ID_KEY);
+	}
+	public String getUser(){
+		return userProps.getProperty(twitterSchema.TWITTER_USER_ID_KEY);
+	}
+	public String getUserName(){
+		return userProps.getProperty(twitterSchema.TWITTER_USER_NAME_KEY);
+	} // end getUniqueID
+	
+	public long getTimestamp(){
+		
+		// Wed Aug 27 13:08:45 +0000 2008
+		// EEE MMM dd hh:mm:ss Z yyyy
+		String createdStr = props.getProperty(twitterSchema.TWITTER_CREATED_TIME_KEY);
+		SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd hh:mm:ss zzz yyyy");
+		Date d = null;
+		try {
+			d = sdf.parse(createdStr);
+		} catch (java.text.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return -1;
+		}
+		
+		return d.getTime();
+	} // end getTimestamp
+	
+	
 	
 	public SimpleFeature getSimpleFeature(){
 		if(!geoEnabled){
