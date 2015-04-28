@@ -61,7 +61,7 @@ public class TwitterMRIngest extends Configured implements Tool{
 		Job job = new Job(conf, "Twitter Geo Ingest");
 		job.setJarByClass(TwitterMRIngest.class);
 		job.setInputFormatClass(TextInputFormat.class);
-		TextInputFormat.setInputPaths(job, new Path(inDirStr));
+		TextInputFormat.setInputPaths(job, inDirStr);
 		job.setOutputFormatClass(GeoWaveOutputFormat.class);
 		job.setMapperClass(TwitterGeoMapper.class);
 		job.setMapOutputKeyClass(GeoWaveOutputKey.class);

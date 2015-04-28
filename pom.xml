@@ -80,7 +80,7 @@
 		<cdh.hadoop.version>2.5.0-cdh5.3.0</cdh.hadoop.version>
 		<geotools.version>12.2</geotools.version>
 		<geoserver.version>2.6.2</geoserver.version>
-		<geowave.version>0.8.4-SNAPSHOT</geowave.version>
+		<geowave.version>0.8.6-SNAPSHOT</geowave.version>
 		<!-- accumulo.version>1.6.0-cdh5.1.0</accumulo.version -->
 		<accumulo.version>1.6.1</accumulo.version>
 		<zookeeper.version>3.4.6</zookeeper.version>

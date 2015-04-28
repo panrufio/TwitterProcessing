@@ -3,11 +3,16 @@ package org.ptp.twitter.process;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.zip.GZIPInputStream;
 
 public class TwitterGatherGeo {
 
@@ -56,11 +61,30 @@ public class TwitterGatherGeo {
 		BufferedWriter bw = new BufferedWriter(fw);
 		for(String l : list){
 			String curFileStr = inDirStr + l;
-			FileReader fr = new FileReader(new File(curFileStr));
-			BufferedReader br = new BufferedReader(fr);
+			System.out.println(curFileStr);
+			InputStream is = new FileInputStream(new File(curFileStr));
+			GZIPInputStream gis = null;
+			InputStreamReader isr = null;
+			BufferedReader r = null;
+			if(curFileStr.endsWith("gz")){
+				System.out.println("GZIP");
+				gis = new GZIPInputStream(is);
+				isr = new InputStreamReader(gis);
+			} else {
+				isr = new InputStreamReader(is);
+			}
+			BufferedReader br = new BufferedReader(isr);
+			
+			
 			String line;
+			int curFileLnCnt = 0;
 			while((line = br.readLine()) != null){
+				curFileLnCnt++;
 				cntLines++;
+				if(curFileLnCnt % 500 == 0){
+					System.out.print(".");
+				}
+				
 				if(line.contains("coordinates") && ! line.contains("\"coordinates\":null")){
 					cntGeo++;
 					curCntGeo++;
@@ -80,8 +104,13 @@ public class TwitterGatherGeo {
 					
 				}
 			}
+			System.out.println();
 			br.close();
-			fr.close();
+			isr.close();
+			if(curFileStr.endsWith("gz")){
+				gis.close();
+			}
+			is.close();
 			
 		}
 		bw.close();

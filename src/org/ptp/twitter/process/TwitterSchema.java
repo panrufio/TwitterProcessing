@@ -257,6 +257,9 @@ public class TwitterSchema {
 	public String getTwitterClass(String k){
 		return twitterProperties.get(k);
 	}
+	public String getTwitterUserClass(String k){
+		return twitterUserProperties.get(k);
+	}
 	
 	public FeatureDataAdapter getFeatureDataAdapter(){
 		return new FeatureDataAdapter(getSimpleFeatureType());

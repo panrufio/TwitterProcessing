@@ -33,6 +33,7 @@ public class TwitterGeoItem {
 	private String md5;
 	private JSONObject jels;
 	private JSONObject joGeo;
+	private JSONObject userJSON;
 	
 	private Properties props;
 	private Properties userProps;
@@ -67,10 +68,8 @@ public class TwitterGeoItem {
 			parseGeo(geoObj.toJSONString());
 			//parseAllItems(jels);
 
-			JSONObject userJSON = (JSONObject)(jels.get(twitterSchema.TWITTER_USER_KEY));
+			userJSON = (JSONObject)(jels.get(twitterSchema.TWITTER_USER_KEY));
 			parseUser(userJSON);
-			
-			
 			
 			ArrayList<String> allKeys = twitterSchema.getTwitterKeys();			
 			for(String ak : allKeys){
@@ -85,7 +84,6 @@ public class TwitterGeoItem {
 				}
 				
 			}
-			
 			
 		} catch(ParseException pe){
 			pe.printStackTrace();
@@ -245,19 +243,6 @@ public class TwitterGeoItem {
 				//System.out.println("1) " + curK + " => " + o.getClass().getCanonicalName() + " => " + o.toString());
 				v = o.toString();
 			}
-			//v = ((JSONObject)o).toJSONString();
-//			if(o.getClass().isInstance(JSONObject.class)){
-//				v = ((JSONObject)o).toJSONString();
-//			} else if(o.getClass().isInstance(JSONArray.class)){
-//				v = ((JSONArray)o).toJSONString();
-//			}
-//			if(o.getClass().isInstance(String.class)){
-//				v = o.toString();
-//			}
-			
-			
-			
-			//String v = ((JSONObject)joGeo.get(curK)).toJSONString();
 			
 			String type = twitterSchema.getTwitterClass(curK);
 			
@@ -300,6 +285,60 @@ public class TwitterGeoItem {
 			
 			
 		} // end for
+		
+		// now add the user information to the feature
+		ArrayList<String> ukeys = twitterSchema.getTwitterUserKeys();
+		for(int x = 0; x < ukeys.size(); x++){
+			String curK = keys.get(x);
+			String v = "";
+			Object o = jels.get(curK);
+			if(o == null){
+				//System.out.println("\tnull for => " + curK);
+				continue;
+			} else {
+				//System.out.println("1) " + curK + " => " + o.getClass().getCanonicalName() + " => " + o.toString());
+				v = o.toString();
+			}
+			
+			String type = twitterSchema.getTwitterUserClass(curK);
+			
+			if(type.equals("Date")){
+				
+				// format "Sun Mar 15 00:07:22 +0000 2015"
+				// EEE MMM dd hh:mm:ss zzzz yyyy 
+				//System.out.println("DATE!!!");
+				if(v.contains(" ")){
+					DateFormat df = new SimpleDateFormat("EEE MMM dd hh:mm:ss zzzz yyyy");
+					try {
+						Date curDate = df.parse(v);
+						pointBuilder.set(curK, curDate);
+						numDate++;
+					} catch (java.text.ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				} else if(v.length() > 0){
+					long t = Long.parseLong(v);
+					Date curDate = new Date(t);
+					pointBuilder.set(curK, curDate);
+					numDate++;
+				}
+				
+			} else if(type.equals("String")){
+				//System.out.println("String!!!");
+
+				pointBuilder.set(curK, v);
+				numString++;
+
+			}
+			
+			
+			
+		} // end for
+		
+		
+		
+		
 		String featureID = "twitter-" + md5;
 		System.out.println("geos=" + numGeo + "\t\tdate=" + numDate + "\t\tstring=" + numString);
 		return pointBuilder.buildFeature(featureID);
