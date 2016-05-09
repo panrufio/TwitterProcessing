@@ -11,6 +11,7 @@ import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Date;
 import java.util.Properties;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -122,7 +123,10 @@ public class TwitterConnect {
 		
 		InputStream ins = urlCon.getInputStream();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(ins, "UTF8"));
-		
+
+		long ctm1 = System.currentTimeMillis();
+		Date d1 = new Date(ctm1);
+		System.out.println(ctm1 + ":\t" + d1.toString());
 		File outFile = new File(outDirStr + fileNamePrefix + System.currentTimeMillis());
 		FileWriter fw = new FileWriter(outFile.getAbsoluteFile());
 		BufferedWriter bw = new BufferedWriter(fw);
@@ -135,7 +139,10 @@ public class TwitterConnect {
 				bw.close();
 				fw.close();
 				
-				outFile = new File(outDirStr + fileNamePrefix + System.currentTimeMillis());
+				long ctm = System.currentTimeMillis();
+				Date d = new Date(ctm);
+				System.out.println(ctm + ":\t" + d.toString());
+				outFile = new File(outDirStr + fileNamePrefix + ctm);
 				fw = new FileWriter(outFile.getAbsoluteFile());
 				bw = new BufferedWriter(fw);
 				

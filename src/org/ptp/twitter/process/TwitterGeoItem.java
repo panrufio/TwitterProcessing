@@ -289,7 +289,7 @@ public class TwitterGeoItem {
 		// now add the user information to the feature
 		ArrayList<String> ukeys = twitterSchema.getTwitterUserKeys();
 		for(int x = 0; x < ukeys.size(); x++){
-			String curK = keys.get(x);
+			String curK = ukeys.get(x);
 			String v = "";
 			Object o = jels.get(curK);
 			if(o == null){
@@ -301,6 +301,9 @@ public class TwitterGeoItem {
 			}
 			
 			String type = twitterSchema.getTwitterUserClass(curK);
+			if(type == null){
+				continue;
+			}
 			
 			if(type.equals("Date")){
 				
@@ -340,7 +343,7 @@ public class TwitterGeoItem {
 		
 		
 		String featureID = "twitter-" + md5;
-		System.out.println("geos=" + numGeo + "\t\tdate=" + numDate + "\t\tstring=" + numString);
+		//System.out.println("geos=" + numGeo + "\t\tdate=" + numDate + "\t\tstring=" + numString);
 		return pointBuilder.buildFeature(featureID);
 	} // end getSimpleFeatue
 	

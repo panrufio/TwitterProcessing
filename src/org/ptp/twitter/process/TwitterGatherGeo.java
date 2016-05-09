@@ -59,15 +59,17 @@ public class TwitterGatherGeo {
 		String outFileName = outDirStr + outFilePrefix + curFileCnt;
 		FileWriter fw = new FileWriter(new File(outFileName));
 		BufferedWriter bw = new BufferedWriter(fw);
+		int fcnt = 0;
 		for(String l : list){
+			fcnt++;
 			String curFileStr = inDirStr + l;
-			System.out.println(curFileStr);
+			System.out.println("(" + fcnt + ") " + curFileStr);
 			InputStream is = new FileInputStream(new File(curFileStr));
 			GZIPInputStream gis = null;
 			InputStreamReader isr = null;
 			BufferedReader r = null;
 			if(curFileStr.endsWith("gz")){
-				System.out.println("GZIP");
+				//System.out.println("GZIP");
 				gis = new GZIPInputStream(is);
 				isr = new InputStreamReader(gis);
 			} else {
